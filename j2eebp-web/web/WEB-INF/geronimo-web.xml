@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<web:web-app xmlns:app="http://geronimo.apache.org/xml/ns/j2ee/application-2.0" xmlns:bp="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:client="http://geronimo.apache.org/xml/ns/j2ee/application-client-2.0" xmlns:conn="http://geronimo.apache.org/xml/ns/j2ee/connector-1.2" xmlns:dep="http://geronimo.apache.org/xml/ns/deployment-1.2" xmlns:ejb="http://openejb.apache.org/xml/ns/openejb-jar-2.2" xmlns:jaspi="http://geronimo.apache.org/xml/ns/geronimo-jaspi" xmlns:log="http://geronimo.apache.org/xml/ns/loginconfig-2.0" xmlns:name="http://geronimo.apache.org/xml/ns/naming-1.2" xmlns:pers="http://java.sun.com/xml/ns/persistence" xmlns:pkgen="http://openejb.apache.org/xml/ns/pkgen-2.1" xmlns:sec="http://geronimo.apache.org/xml/ns/security-2.0" xmlns:web="http://geronimo.apache.org/xml/ns/j2ee/web-2.0.1">
+    <dep:environment>
+        <dep:moduleId>
+            <dep:groupId>j2eebp</dep:groupId>
+            <dep:artifactId>j2eebp-web</dep:artifactId>
+            <dep:version>1.0</dep:version>
+            <dep:type>car</dep:type>
+        </dep:moduleId>
+        <dep:dependencies>
+            <dep:dependency>
+                <dep:groupId>org.apache.geronimo.framework</dep:groupId>
+                <dep:artifactId>j2ee-security</dep:artifactId>
+                <dep:type>car</dep:type>
+            </dep:dependency>
+            <dep:dependency>
+                <dep:groupId>org.apache.geronimo.framework</dep:groupId>
+                <dep:artifactId>j2ee-security</dep:artifactId>
+                <dep:type>car</dep:type>
+            </dep:dependency>
+        </dep:dependencies>
+    </dep:environment>
+    <web:context-root>/j2eebp-web</web:context-root>
+    <web:security-realm-name>J2eeBPSecurityRealm</web:security-realm-name>
+    <sec:security>
+        <sec:role-mappings>
+            <sec:role role-name="itms">
+                <sec:description>limited access to employees</sec:description>
+                <sec:principal class="org.apache.geronimo.security.realm.providers.GeronimoGroupPrincipal" name="itms"/>
+            </sec:role>
+            <sec:role role-name="xtms">
+                <sec:description>limited access to customers</sec:description>
+                <sec:principal class="org.apache.geronimo.security.realm.providers.GeronimoGroupPrincipal" name="xtms"/>
+            </sec:role>
+        </sec:role-mappings>
+    </sec:security>
+    <dep:gbean class="org.apache.geronimo.security.realm.GenericSecurityRealm" name="J2eeBPSecurityRealm">
+        <dep:attribute name="realmName">J2eeBPSecurityRealm</dep:attribute>
+        <dep:reference name="ServerInfo">
+            <dep:name>ServerInfo</dep:name>
+        </dep:reference>
+        <dep:xml-reference name="LoginModuleConfiguration">
+            <log:loginConfig>
+                <log:login-module control-flag="REQUIRED" wrap-principals="false">
+                    <log:login-domain-name>J2eeBPSecurityRealm</log:login-domain-name>
+                    <log:login-module-class>org.apache.geronimo.security.realm.providers.SQLLoginModule</log:login-module-class>
+                    <log:option name="dataSourceName">J2eeBPDatabasePool</log:option>
+                    <log:option name="userSelect">select username,password from users where username=?</log:option>
+                    <log:option name="groupSelect">select username,groupname from groups where username=?</log:option>
+                    <log:option name="digest"/>
+                    <log:option name="encoding"/>
+                </log:login-module>
+            </log:loginConfig>
+        </dep:xml-reference>
+    </dep:gbean>
+</web:web-app>

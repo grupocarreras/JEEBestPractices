@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html">
+    <head>
+		<meta charset="UTF-8"/>       
+        <title>Login Form</title>    
+    </head>
+    <body>
+		<img src="../images/wedge-logo.jpg" border="0" alt="" />
+		<br />
+        <form name="loginForm" method="POST" action="j_security_check">
+			<table style="border: 0px;">
+				<tr><td>&#160;&#160;</td><td>Usuario:</td><td><input type="text" name="j_username" /></td></tr>
+				<tr><td>&#160;&#160;</td><td>Contraseña:</td><td><input type="password" name="j_password" /></td></tr>
+				<tr><td>&#160;&#160;</td><td colspan="2">&#160;&#160;</td></tr>		
+				<tr><td>&#160;&#160;</td><td colspan="3"><input type="submit" value="Login"/>&#160;<input type="reset" value="Reset"/></td></tr>
+			</table>                
+        </form>       
+    </body>
+</html>

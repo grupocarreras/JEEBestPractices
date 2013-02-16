@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/!svn/ver/37/trunk/wedge-web/web/login
+END
+login.xhtml
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/37/trunk/wedge-web/web/login/login.xhtml
+END
+loginFailed.xhtml
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/37/trunk/wedge-web/web/login/loginFailed.xhtml
+END
+noAuthenticated.xhtml
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/37/trunk/wedge-web/web/login/noAuthenticated.xhtml
+END

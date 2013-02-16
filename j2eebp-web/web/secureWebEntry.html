@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>j2eebp</title>
+<link href="http://fonts.googleapis.com/css?family=Dancing+Script|Open+Sans+Condensed:300" rel="stylesheet" type="text/css" />
+<link href="style.css" rel="stylesheet" type="text/css" media="screen" />
+</head>
+<body>
+<div id="wrapper">
+	<div id="menu-wrapper">
+		<div id="menu" class="container">
+			<ul>
+				<li class="current_page_item"><a href="#">Quienes somos</a></li>
+				<li><a href="#">Nuestro objetivo</a></li>
+				<li><a href="#">Blog</a></li>
+				<li><a href="#">Enlaces</a></li>
+				<li><a href="#">Contacta con nosotros</a></li>
+			</ul>
+		</div>
+	</div>
+	<div id="logo" class="container">
+		<h1><a href="#">j2eebp </a></h1>
+		<p>siguiendo las buenas practicas</p>
+	</div>
+	<div class="divider">&nbsp;</div>
+	<div id="page" class="container">
+		<div id="content">
+			<div class="post">
+				<h2 class="title"><a href="#">Seguridad en aplicaciones web</a></h2>
+				<div class="entry">
+					<p>En este ejemplo, vamos a poner en practica la <strong>seguridad</strong> de una aplicacion web mediante la autentificación basada en el contenedor.
+                                            En la practica nos permitirá autentificar a un usuario y darle el acceso restringido a los recursos que unicamente tiene autorizado
+                                            mediante el servicio de seguridad que nos proporciona el contenedor de componentes (<strong>component container</strong>) en Java EE. Eso permite
+                                            lilberar a nuestra aplicación web de la engorrosa labor de programar la autentificación y control de acceso.</p>
+
+                                            <h3>El contexto</h3>
+
+                                            <p>Para poner en marcha nuestra aplicación hemos optado por un servidor <b>Apache Geronimo 3.0</b>, con autentificación contra base de datos <b>Derby</b>
+                                            e implementada y desplegada desde el framework <b>Eclipse Juno</b>. Eclipse dispone de un
+                                            plugin para el despliegue de aplicaciones en Gerónimo (GEP, Geronimo Eclipse Plugin), que
+                                            podrás encontrar <a href="https://cwiki.apache.org/GMOxDOC30/installing-geronimo-eclipse-plugin.html">aqui</a>
+                                            </p>
+
+
+                                            <h3>Usando deployment descriptors</h3>
+
+                                            <p>El contenedor nos ofrece dos tipos de seguridad: la <strong>declarativa</strong> y la basada en <strong>programación</strong>. En este ejemplo vamos a centrarnos
+                                            en la declarativa. Esta permite comunicar al servidor los requerimientos de seguridad mediante el uso de deployment descriptors que serán incluidos dentro de la aplicación de
+                                            forma independiente al código. De ese modo, podremos cambiar en cualquier momento las condiciones de acceso sin necesidad de modificar el codigo fuente.</p>
+                                            
+
+                                            <p>El deployer recibe la información de este deployment descriptor y la usa para definir los permisos de acceso de los diversos roles de
+                                                seguridad, establecer el tipo de autentificación del usuario y el mecanismo de transporte deseado. </p>
+                                            <p>Para este ejemplo, utilizamos un deployment descriptor (web.xml) que incluiremos en el directorio WEB-INF de la aplicación.
+                                                En este fichero informamos de los dos grupos de usuarios o <strong>roles</strong> asi como las restricciones de acceso a los
+                                                recursos que tendrá cada grupo o rol. Los roles definidos en nuestro ejemplo son:<br/>
+                                                <li>
+                                                    <ul>- <b>itms</b>. Es el grupo de usuarios (empleados) que acceden a la web interna de una empresa. Por tanto, solo podrán acceder a los
+                                                 recursos que se encuentren dentro de la ruta /xtms dentro de nuestra aplicación.</ul>
+                                                    <ul>- <b>xtms</b>. Es el grupo de usuarios (clientes) que acceden a la web publica de una empresa. En este caso, solo podrán acceder a los
+                                                    recursos /itms/*.</ul>
+                                                </li> <br/>
+
+                                               Por tanto, los usuarios de itms no pueden acceder a recursos de xtms y los usuarios de xtms tampoco pueden acceder a los de itms.<br/>
+                                           </p>
+
+                                            <h3>Usando autentificación por base de datos</h3>
+                                            <p>La autentificación puede realizarse de diversas formas (fichero de propiedades, LDAP, base de datos). En nuestro caso hemos optado
+                                                por la autentificación por base de datos utilizando Derby, que Geronimo incluye en su distribución. <br/>
+                                                Para este ejemplo creamos una nueva base de datos llamada J2eeBPDatabase y un pool de conexiones a la misma llamado J2eeBPDatabasePool.
+                                                <a href="https://cwiki.apache.org/GMOxDOC30/database-sql-realm.html">Aqui</a> encontrarás como hacerlo usando la consola de administración de Geronimo</a>.
+                                                 <br/>
+                                                 A continuación usando la funcionalidad de ejecución de comandos sql que ofrece la consola podemos crear las tablas y cargarlas con datos de ejemplo.
+                                                Crearemos las tablas son users y groups. La tabla users almacena los usuarios (y contraseñas) con acceso a la aplicación.
+                                                La tabla groups determina que usuarios pertenecen a cada grupo o rol de seguridad<br/>
+                                                Puedes descargarte el script para generar las tablas y cargar datos pinchando <a href="./resources/derbyUsersGroups.sql">aqui</a>
+
+                                            <h3>Generando el deployment plan</h3>
+                                            <p>Por ultimo tenemos que crear un <strong>deployment plan</strong> (geronimo-web.xml) que incluiremos en el directorio WEB-INF de nuestra aplicación.
+                                                Con este plan, el deployer mapea los roles de seguridad, ejbs, bases de datos, etc. declarados en web.xml con las correspondientes
+                                                entidades desplegadas en el servidor. También permite incluir cualquier configuración especifica del contenedor web (Tomcat o Jetty).</p>
+
+                                            <p>Para definir ese mapeo, generamos un <strong>security realm</strong> en geronimo-web.xml llamado J2eeBPSecurityRealm. 
+                                                Un security realm es un objeto que define una coleccion de proveedores de seguridad, usuarios, grupos, roles y politicas de seguridad que
+                                                incluiremos en nuestra aplicación.Geronimo intentará autentificar y dar acceso al usuario verificando el rol de seguridad asignado al usuario en el security realm.
+                                                Podrás crear nuestro security realm facilmente desde el deployment plan editor incluido en el plugin de Eclipse.
+                                                Para mas información pincha <a href="https://cwiki.apache.org/GMOxDOC22/using-security-realm-wizard-in-gep.html">aqui</a></p>
+
+                                            <h3>...y despues de configurar...</h3>
+                                            <p>Despleguemos la aplicación y probemos. El despliegue lo podemos realizar directamente desde Eclipse con la opción "Run as" desde nuestro
+                                                proyecto. Previamente habremos configurado el servidor Geronimo en la pestaña Servers. Pincha
+                                                <a href="https://cwiki.apache.org/GMOxDOC22/how-to-use-geronimo-eclipse-plugin.html">aqui</a> si necesitas ayuda.<br/>
+                                                Tambien podemos generar el paquete war y desplegarlo manualmente a través de la linea de comandos. Al final de
+                                                <a href="https://cwiki.apache.org/GMOxDOC30/quick-start-apache-geronimo-for-the-impatient.html#Quickstart-ApacheGeronimofortheimpatient-Creatinganddeployingasampleapplication">
+                                                este tutorial</a> encontrarás como hacerlo.
+				</div>
+			</div>
+			<div style="clear: both;">&nbsp;</div>
+		</div>
+		<!-- end #content -->
+		<div id="sidebar">
+			<div>
+				<h2>Por donde empezar...</h2>
+				<ul class="list-style1">
+					<li class="first"><a href="secureWebEntry.html">Seguridad en aplicaciones web</a></li>
+					<li><a href="#">Lorem ipsum dolor sit amet.</a></li>
+					<li><a href="#">Phasellus nec erat sit amet nibh.</a></li>
+					<li><a href="#">Cras vitae metus aliquam risus.</a></li>
+					<li><a href="#">Phasellus nec erat sit amet nibh.</a></li>
+					<li><a href="#">Maecenas vitae orci vitae tellus.</a></li>
+				</ul>
+			</div>
+		</div>
+		<!-- end #sidebar -->
+		<div style="clear: both;">&nbsp;</div>
+	</div>
+	<!-- end #page -->
+	<div class="divider">&nbsp;</div>
+	<div id="three-column" class="container">
+		<div id="tbox1">
+			<div class="box-style">
+				<div class="image"><img src="images/cafe.jpeg" width="320" height="170" alt="" /></div>
+				<div class="arrow"></div>
+				<div class="content">
+					<h2>Una taza de café...</h2>
+					<p>Aliquam erat volutpat. Pellentesque tristique ante ut risus. Quisque dictum. Integer nisl risus, sagittis convallis, rutrum id, elementum congue, nibh. </p>
+				</div>
+			</div>
+		</div>
+		<div id="tbox2">
+			<div class="box-style">
+				<div class="image"><img src="images/teclado.jpeg" width="320" height="170" alt="" /></div>
+				<div class="arrow"></div>
+				<div class="content">
+					<h2>antes de trabajar...</h2>
+					<p>Aliquam erat volutpat. Pellentesque tristique ante ut risus. Quisque dictum. Integer nisl risus, sagittis convallis, rutrum id, elementum congue, nibh. </p>
+				</div>
+			</div>
+		</div>
+		<div id="tbox3">
+			<div class="box-style">
+				<div class="image"><img src="images/billar.jpeg" width="320" height="170" alt="" /></div>
+				<div class="arrow"></div>
+				<div class="content">
+					<h2>Y a por el reto</h2>
+					<p>Aliquam erat volutpat. Pellentesque tristique ante ut risus. Quisque dictum. Integer nisl risus, sagittis convallis, rutrum id, elementum congue, nibh.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="footer-content" class="container">
+	<div id="footer-bg">
+		<div id="column1">
+			<h2>Welcome to my website</h2>
+			<p>In posuere eleifend odio quisque semper augue mattis wisi maecenas ligula. Donec leo, vivamus fermentum nibh in augue praesent a lacus at urna congue rutrum. Quisque dictum integer nisl risus, sagittis convallis, rutrum id, congue, and nibh. Pellentesque tristique ante ut risus. Quisque dictum. Integer nisl risus, sagittis convallis, rutrum id, elementum congue, nibh. Suspendisse dictum porta lectus.<br />
+			</p>
+		</div>
+		<div id="column2">
+			<h2>Etiam rhoncus volutpat</h2>
+			<ul class="list-style2">
+				<li class="first"><a href="#">Pellentesque quis elit non lectus gravida blandit.</a></li>
+				<li><a href="#">Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</a></li>
+				<li><a href="#">Phasellus nec erat sit amet nibh pellentesque congue.</a></li>
+				<li><a href="#">Cras vitae metus aliquam risus pellentesque pharetra.</a></li>
+				<li><a href="#">Maecenas vitae orci vitae tellus feugiat eleifend.</a></li>
+			</ul>
+		</div>
+		<div id="column3">
+			<h2>Recommended Links</h2>
+			<ul class="list-style2">
+				<li class="first"><a href="#">Pellentesque quis elit non lectus gravida blandit.</a></li>
+				<li><a href="#">Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</a></li>
+				<li><a href="#">Phasellus nec erat sit amet nibh pellentesque congue.</a></li>
+				<li><a href="#">Cras vitae metus aliquam risus pellentesque pharetra.</a></li>
+				<li><a href="#">Maecenas vitae orci vitae tellus feugiat eleifend.</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+<div id="footer">
+	<p>© 2012 Untitled Inc. All rights reserved. Lorem ipsum dolor sit amet nullam blandit consequat phasellus etiam lorem.</p>
+</div>
+<!-- end #footer -->
+</body>
+</html>
